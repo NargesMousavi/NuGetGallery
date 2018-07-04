@@ -226,9 +226,14 @@ namespace NuGetGallery
             return package;
         }
 
-        public IEnumerable<Package> FindPackagesByOwner(User user, bool includeUnlisted, bool includeVersions = false)
+        public IEnumerable<Package> GetPagedPackagesByOwner(User user, int page, int pageSize, bool includeUnlisted, bool includeVersions = false)
         {
-            return GetPackagesForOwners(new[] { user.Key }, includeUnlisted, includeVersions).ToList();
+            return GetPackagesForOwners(new[] { user.Key }, includeUnlisted, includeVersions)
+                .Where(p=>p.PackageStatusKey == PackageStatus.Available)
+                .OrderByDescending(p=>p.PackageRegistration.DownloadCount)
+                .Skip((page-1)*pageSize)
+                .Take(pageSize)
+                .ToList();
         }
 
         public (int totalPackages, long totalPackageDownloadCount) GetTotalPackagesStatisticsForOwner(User user, bool includeUnlisted, bool includeVersions = false)

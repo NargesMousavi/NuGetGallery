@@ -29,7 +29,7 @@ namespace NuGetGallery
 
         Package FindAbsoluteLatestPackageById(string id, int? semVerLevelKey);
 
-        IEnumerable<Package> FindPackagesByOwner(User user, bool includeUnlisted, bool includeVersions = false);
+        IEnumerable<Package> GetPagedPackagesByOwner(User user, int page, int pageSize, bool includeUnlisted, bool includeVersions = false);
 
         (int totalPackages, long totalPackageDownloadCount) GetTotalPackagesStatisticsForOwner(User user, bool includeUnlisted, bool includeVersions = false);
 

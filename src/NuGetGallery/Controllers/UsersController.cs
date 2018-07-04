@@ -614,20 +614,15 @@ namespace NuGetGallery
                 return HttpNotFound();
             }
 
-            var packages = PackageService.FindPackagesByOwner(user, includeUnlisted: false)
-                .Where(p => p.PackageStatusKey == PackageStatus.Available)
-                .OrderByDescending(p => p.PackageRegistration.DownloadCount)
+            var packages = PackageService.GetPagedPackagesByOwner(user, page, Constants.DefaultPackageListPageSize, includeUnlisted: false)
                 .Select(p => new ListPackageItemViewModel(p, currentUser)
                 {
                     DownloadCount = p.PackageRegistration.DownloadCount
                 }).ToList();
 
-            var pagedPackages = packages.Skip(Constants.DefaultPackageListPageSize * (page - 1))
-                .Take(Constants.DefaultPackageListPageSize)
-                .ToList();
             var (totalPackages, totalPackageDownloadCount) = PackageService.GetTotalPackagesStatisticsForOwner(user, includeUnlisted: false);
 
-            var model = new UserProfileModel(user, currentUser, pagedPackages, totalPackages, totalPackageDownloadCount, page - 1, Constants.DefaultPackageListPageSize, Url);
+            var model = new UserProfileModel(user, currentUser, packages, totalPackages, totalPackageDownloadCount, page - 1, Constants.DefaultPackageListPageSize, Url);
 
             return View(model);
         }
